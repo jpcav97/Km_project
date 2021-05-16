@@ -214,6 +214,7 @@ def sortbypubs(data,sortbyauth,data_fauthpub,nopub):
         
     return df_multpubs, pairs
 
+# hi
 def getallpairs(dat):
     L_pairs = sum(dat['num pairs'])
     ind_numpair = dat.columns.get_loc('num pairs')
