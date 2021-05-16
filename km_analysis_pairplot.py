@@ -184,6 +184,14 @@ print('Number of measurements = {}'.format(sum(data_MM2['count'])))
 #%% Find out how many unique pubs are in each set
 data_MM = findpubs(data_MM)
 
+#%% Histogram of how many values are in each set
+l = np.unique(data_MM['count'],return_counts=True)
+
+print('Proportion of Groups with 3, 4, and 5 entries =',l[1][0:3]/sum(l[1]))
+#%% Histogram of how many publications are in each set
+p = np.unique(data_MM['Number of Pubs'],return_counts=True)
+
+print('Proportion of Groups with 1, 2, and 3 publications =',p[1][0:3]/sum(p[1]))
 #%% Combined histogram of how many publications are in each set
 bins = np.arange(0,40,1)
 plt.hist(data_MM['count'],bins = bins, color= 'white',edgecolor='k', label = 'Entries per set')
