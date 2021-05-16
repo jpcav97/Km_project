@@ -184,31 +184,6 @@ print('Number of measurements = {}'.format(sum(data_MM2['count'])))
 #%% Find out how many unique pubs are in each set
 data_MM = findpubs(data_MM)
 
-#%% Histogram of how many values are in each set
-l = np.unique(data_MM['count'],return_counts=True)
-plt.hist(data_MM['count'],bins = np.arange(min(l[0]),max(l[0]),1), color= 'white',edgecolor='k')
-plt.xlabel('# of entries per set')
-plt.ylabel('# of sets')
-#plt.title('Type 2 MRC')
-#plt.ylim(-20,600)
-plt.xlim(2,35)
-plt.tight_layout()
-plt.show()
-
-print('Proportion of Groups with 3, 4, and 5 entries =',l[1][0:3]/sum(l[1]))
-#%% Histogram of how many publications are in each set
-p = np.unique(data_MM['Number of Pubs'],return_counts=True)
-
-plt.hist(data_MM['Number of Pubs'],np.arange(min(p[0]),max(p[0]),1), color= 'white',edgecolor='k')
-plt.xlabel('# of publications per set')
-plt.ylabel('# of sets')
-#plt.title('Type 2 MRC')
-plt.ylim(-20,800)
-plt.xlim(0.5,6)
-plt.tight_layout()
-plt.show()
-
-print('Proportion of Groups with 1, 2, and 3 publications =',p[1][0:3]/sum(p[1]))
 #%% Combined histogram of how many publications are in each set
 bins = np.arange(0,40,1)
 plt.hist(data_MM['count'],bins = bins, color= 'white',edgecolor='k', label = 'Entries per set')
