@@ -14,6 +14,7 @@ import math
 import statistics as stats
 from scipy import stats as st
 import statsmodels.api as sm
+from statsmodels.distributions.empirical_distribution import ECDF
 from sklearn.linear_model import LinearRegression
 from difflib import SequenceMatcher as sq
 import random
@@ -339,11 +340,16 @@ def measuresofquality(data_MM_pregroup,data):
     Dstdev = math.sqrt(sum(data['Diff^2'])/(2*len(data)))
     print('\n The Dahlberg Standard Deviation is {}'.format(round(Dstdev,3)))
     
-    d_ks2,p_ks2 = st.ks_2samp(data['value 1'], data['value 2'])
-    print('\n KS test D statistic = {}'.format(round((d_ks2),2)))
-    print('\n D-critical statistic = {}'.format(round((p_ks2),2)))
+    d_ks,p_ks = st.ks_2samp(data['value 1'], data['value 2'])
+    print('\n 2 Sample KS test D statistic = {}'.format(round((d_ks),2)))
+    print('\n 2 Sample D-critical statistic = {}'.format(round((p_ks),2)))
     
-    # Histogram of Difference between pairs
+    if d_ks < p_ks:
+        print('\n Value to Value pairs come from a normal distribution')
+    else:
+        print('Value to Value pairs do not come from a normal distribution')
+    
+    # DIFFERENCE BETWEEN PAIRS
     u = np.unique(data['Diff'])
     
     plt.hist(data['Diff'], bins=np.arange(min(u),max(u),0.2), color= 'white',edgecolor='k')
@@ -352,12 +358,19 @@ def measuresofquality(data_MM_pregroup,data):
     plt.title('Difference Between Pairs')
     plt.tight_layout()
     plt.show()
-    if d_ks2 < p_ks2:
-        print('\n Measurements come from a normal distribution')
-    else:
-        print('Measurements do not come from a normal distribution')
     
-    return MUE,MUE2,MDUE,MDUE2,stdev,R2p,R2pmax,Dstdev,d_ks2,p_ks2
+    # ecdf = ECDF(data['Diff'])
+    # plt.plot(ecdf.x, ecdf.y)
+    # plt.show()
+    
+    # sm.qqplot(data['Diff'], line ='45')
+    d_ks2,p_ks2 = st.kstest(data['Diff'],'norm')
+    if d_ks2 < p_ks2:
+        print('\n Differences between pairs come from a normal distribution')
+    else:
+        print('Differences between pairs do not come from a normal distribution')
+    
+    return MUE,MUE2,MDUE,MDUE2,stdev,R2p,R2pmax,Dstdev,d_ks,p_ks
 
 def randomvals_and_diff(data,ind_pkm,ind_EC):
     L = len(data)
