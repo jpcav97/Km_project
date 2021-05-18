@@ -344,7 +344,8 @@ def measuresofquality(data_MM_pregroup,data):
     print('\n 2 Sample KS test D statistic = {}'.format(round((d_ks),2)))
     print('\n 2 Sample D-critical statistic = {}'.format(round((p_ks),2)))
     
-    if d_ks < p_ks:
+    Dcrit_2samp = 1.36*math.sqrt(2/L)
+    if d_ks < Dcrit_2samp:
         print('\n Value to Value pairs come from a normal distribution')
     else:
         print('Value to Value pairs do not come from a normal distribution')
@@ -363,12 +364,15 @@ def measuresofquality(data_MM_pregroup,data):
     # plt.plot(ecdf.x, ecdf.y)
     # plt.show()
     
-    # sm.qqplot(data['Diff'], line ='45')
-    d_ks2,p_ks2 = st.kstest(data['Diff'],'norm')
-    if d_ks2 < p_ks2:
-        print('\n Differences between pairs come from a normal distribution')
+    sm.qqplot(data['Diff'], line ='45')
+    plt.title('Q-Q Plot of Difference Between Pairs')
+    plt.show()
+    
+    stats = st.shapiro(data['Diff'])
+    if stats.pvalue < 0.05:
+        print(f'\nSufficient data to say differences come from a normal distribution (Shapiro-Wilk statistic = {stats.statistic})')
     else:
-        print('Differences between pairs do not come from a normal distribution')
+        print(f'Differences between pairs do not come from a normal distribution (Shapiro-Wilk statistic = {stats.statistic})')
     
     return MUE,MUE2,MDUE,MDUE2,stdev,R2p,R2pmax,Dstdev,d_ks,p_ks
 
