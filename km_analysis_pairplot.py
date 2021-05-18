@@ -612,3 +612,9 @@ print('Total number of entries of all sets in type 1 and type 2 MRC, respectivel
 multpairs = False
 isgrouped = True # For data not grouped by MRC's yet (only for data_MM_pregroup)
 df_EC_analysis, unique_EC_tot = EnzymeClassAnalysis(data_MM_pregroup,multpairs,isgrouped)
+
+#%% Save final versions of pair dataframes
+df_pairs.to_csv('df_pairs.csv')
+df_pairs_tot.to_csv('df_pairs_tot.csv')
+df_statistics_MRC1.to_csv('Stats_MRC1.csv')
+
