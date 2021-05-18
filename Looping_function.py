@@ -11,15 +11,60 @@ Created on Tue May 18 15:52:13 2021
 import pandas as pd
 import numpy as np
 from functions import mean_confidence_interval,measuresofquality, \
-    randomvals_and_diff, get_pairs_tot
-    
-data_MM_pregroup = pd.read_csv('data_MM_pregroup_pubs_auth.csv',index_col=0)
-data_MM = pd.read_csv('data_MM.csv')
-data_MM_MRC1 = pd.read_csv('data_MM_MRC1.csv')
+    randomvals_and_diff, get_pairs_tot, make_groups, organize_index
 
-df_pairs_tot = get_pairs_tot(data_MM_pregroup)
-df_pairs = randomvals_and_diff(data_MM)
-df_pairs_MRC1 = randomvals_and_diff(data_MM_MRC1)
+#%% Import raw data
+data_MM_pregroup = pd.read_csv('data_MM_pregroup_pubs_auth.csv',index_col=0)
+Ltot = len(data_MM_pregroup)
+ind_pkm = data_MM_pregroup.columns.get_loc('pKm')
+
+data_MM_pregroup['Enzyme Class'] = ''
+ind_EC = data_MM_pregroup.columns.get_loc('Enzyme Class')
+ind_EC_num = data_MM_pregroup.columns.get_loc('ec_number')
+
+for i in range(len(data_MM_pregroup)):
+    # Create a column for Enzyme Class
+    temp = data_MM_pregroup.iloc[i,ind_EC_num]
+    ind = temp.find('.')
+    data_MM_pregroup.iloc[i,ind_EC] = temp[0:ind]
+    
+#%% Create data_MM
+groups = ['ec_number','kineticlaw_type','substrate','organism','ph','temperature','buffer'] 
+
+P=3 # Minimum number of values in each group
+islogtransf = True # True for pKm and False for Km
+data_all = make_groups(data_MM_pregroup,groups,islogtransf,P)
+data_all = data_all.reset_index(drop=True)
+
+nw_idx = organize_index(data_all)
+data_MM = data_all.reindex(nw_idx)
+data_MM = data_MM.reset_index(drop=True)
+
+print('Number of measurements = {}'.format(sum(data_MM['count'])))
+
+#%% Create data_MM_MRC1
+groups = ['ec_number','kineticlaw_type','substrate','organism'] 
+
+data_MRC1 = make_groups(data_MM_pregroup,groups,True,P)
+data_MRC1 = data_MRC1.reset_index(drop=True)
+
+nw_idx = organize_index(data_MRC1)
+data_MM_MRC1 = data_MRC1.reindex(nw_idx)
+data_MM_MRC1 = data_MM_MRC1.reset_index(drop=True)
+L2 = len(data_MM_MRC1)
+
+print('Number of measurements = {}'.format(sum(data_MM_MRC1['count'])))
+
+#%% Looping
+ind_pkm = data_MM.columns.get_loc('Km')
+ind_EC = data_MM.columns.get_loc('ec_number')
+
+ind_pkm_MRC1 = data_MM_MRC1.columns.get_loc('Km')
+ind_EC_MRC1 = data_MM_MRC1.columns.get_loc('ec_number')
+
+df_pairs_tot,L_pairs_tot = get_pairs_tot(data_MM_pregroup)
+df_pairs,L_pairs = randomvals_and_diff(data_MM,ind_pkm,ind_EC)
+df_pairs_MRC1,L_pairs_MRC1 = randomvals_and_diff(data_MM_MRC1,ind_pkm_MRC1,ind_EC_MRC1)
 
 MUE_tot_evol,MDUE_tot_evol,stdev_tot_evol,R2p_tot_evol,R2pmax_tot_evol,Dstdev_tot_evol = \
     measuresofquality(data_MM_pregroup,df_pairs_tot)
@@ -37,19 +82,19 @@ Max = 100
 while k < Max:
     
     # df_pairs_tot = get_pairs_tot(data_MM_pregroup)
-    df_pairs = randomvals_and_diff(data_MM)
-    df_pairs_MRC1 = randomvals_and_diff(data_MM_MRC1)
+    df_pairs,L_pairs = randomvals_and_diff(data_MM,ind_pkm,ind_EC)
+    df_pairs_MRC1,L_pairs_MRC1 = randomvals_and_diff(data_MM_MRC1,ind_pkm_MRC1,ind_EC_MRC1)
     
     # MUE_tot,MDUE_tot,stdev_tot,R2p_tot,R2pmax_tot,Dstdev_tot = \
     #     measuresofquality(data_MM_pregroup,df_pairs_tot)
-    MUE,MDUE,stdev,R2p,R2pmax,Dstdev = \
+    [MUE,MDUE,stdev,R2p,R2pmax,Dstdev] = \
         measuresofquality(data_MM_pregroup,df_pairs)
-    MUE_MRC1,MDUE_MRC1,stdev_MRC1,R2p_MRC1,R2pmax_MRC1,Dstdev_MRC1 = \
+    [MUE_MRC1,MDUE_MRC1,stdev_MRC1,R2p_MRC1,R2pmax_MRC1,Dstdev_MRC1] = \
         measuresofquality(data_MM_pregroup,df_pairs_MRC1)
     
     # mean_tot,lower_tot,upper_tot = mean_confidence_interval(MUE_tot,stdev_tot,len(df_pairs_tot))
-    mean,lower,upper = mean_confidence_interval(MUE,stdev,len(df_pairs))
-    mean_MRC1,lower_MRC1,upper_MRC1 = mean_confidence_interval(MUE_MRC1,stdev_MRC1,len(df_pairs_MRC1))
+    [mean,lower,upper] = mean_confidence_interval(MUE,stdev,len(df_pairs))
+    [mean_MRC1,lower_MRC1,upper_MRC1] = mean_confidence_interval(MUE_MRC1,stdev_MRC1,len(df_pairs_MRC1))
     
     """ Storing Values """
     # MUE_tot_evol = np.vstack((MUE_tot_evol,MUE_tot))
@@ -65,7 +110,7 @@ while k < Max:
     stdev_MRC1_evol = np.vstack((stdev_MRC1_evol,stdev_MRC1))
     
     # lower_tot_evol = np.vstack((lower_tot_evol,lower_tot))
-    lower_evol = np.vstack((lower_evol,stdev))
+    lower_evol = np.vstack((lower_evol,lower))
     lower_MRC1_evol = np.vstack((lower_MRC1_evol,lower_MRC1))
     
     # upper_tot_evol = np.vstack((upper_tot_evol,upper_tot))
@@ -138,9 +183,11 @@ while k < Max:
     R2pmax_dev = R2pmax_evol.std(0)
     R2pmax_MRC1_dev = R2pmax_MRC1_evol.std(0)
     
-    index = ['MRC2','MRC1']
-
-    loop_data = pd.DataFrame({'Loops': [Max,Max],
+    k = k + 1
+    
+# Save looping data
+index = ['MRC2','MRC1']
+loop_data = pd.DataFrame({'Loops': [Max,Max],
     'MUE': [MUE_ave,MUE_MRC1_ave],
     'MUE std': [MUE_dev,MUE_MRC1_dev], 
     'MDUE': [MDUE_ave,MDUE_MRC1_ave],

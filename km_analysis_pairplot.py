@@ -65,7 +65,7 @@ idx_std_res_tot,num_out_tot,rsquared_tot,linreg_tot,model_tot = residuals(df_pai
 
 # Perform 2-Sample Kolmolgorov-Smirnov Test on pairs taken from entire dataset
 # Need 'value 1', 'value 2', 'Diff', and 'Diff^2' columns
-MUE_tot,MUE2_tot,MDUE_tot,MDUE2_tot,stdev_tot,R2p_tot,R2pmax_tot,Dstdev_tot,d_ks2_tot,p_ks2_tot = measuresofquality(data_MM_pregroup,df_pairs_tot)
+MUE_tot,MDUE_tot,stdev_tot,R2p_tot,R2pmax_tot,Dstdev_tot = measuresofquality(data_MM_pregroup,df_pairs_tot)
 
 # Pair Plot
 title = 'Plot of Pairs of pKm Values Taken Randomly \n from Entire Dataset (only MM/{} Pairs)'.format(Lpairs)
@@ -105,7 +105,6 @@ L2 = len(data_MM)
 
 # Number of measurements after removing negative measurements
 print('Number of groups = {}, Number of measurements = {}'.format(len(data_MM),sum(data_MM['count'])))
-data_MM.to_csv('data_MM.csv')
 
 #%%# Get pairs regardless of number of publications ####
 ind_pkm = data_MM.columns.get_loc('Km')
@@ -114,7 +113,7 @@ df_pairs, L_pairs = randomvals_and_diff(data_MM,ind_pkm,ind_EC)
 
 #%% Calculate the measures of quality
 # Need 'value 1', 'value 2', 'Diff', and 'Diff^2' columns
-MUE,MUE2,MDUE,MDUE2,stdev,R2p,R2pmax,Dstdev,d_ks2,p_ks2 = measuresofquality(data_MM_pregroup,df_pairs)
+MUE,MDUE,stdev,R2p,R2pmax,Dstdev = measuresofquality(data_MM_pregroup,df_pairs)
 
 #%% Calculate Standardized residuals and find outliers
 idx_std_res,num_out,rsquared,linreg,model = residuals(df_pairs,False)
@@ -220,7 +219,7 @@ for i in range(len(bools)):
     
     # Calculate the measures of quality based on differences
     # Need 'value 1', 'value 2', 'Diff', and 'Diff^2' columns
-    MUE_all,MUE2_all,MDUE_all,MDUE2_all,stdev_all,R2p_all,R2pmax_all,Dstdev_all,d_ks2_all,p_ks2_all = measuresofquality(data_MM_pregroup,df_allpairs)
+    MUE_all,MDUE_all,stdev_all,R2p_all,R2pmax_all,Dstdev_all = measuresofquality(data_MM_pregroup,df_allpairs)
 
     # Calculate standardized residuals and find outliers
     idx_std_res_all,num_out_all,rsquared_all,linreg_all,model_all = residuals(df_allpairs,False)
@@ -341,8 +340,6 @@ df_statistics = pd.DataFrame({'Count': [len(df_pairs_tot),len(df_pairs),len(df_a
     'R2 Pearson Max': [R2pmax_tot,R2pmax,R2pmax_all],
     'Stdev': [stdev_tot,stdev,stdev_all],
     'Dahlberg Stdev':[Dstdev_tot,Dstdev,Dstdev_all],
-    'KS test D-stat':[d_ks2_tot,d_ks2,d_ks2_all],
-    'D-critical stat':[p_ks2_tot,p_ks2,p_ks2_all],
     'Num Outliers':[num_out_tot,num_out,num_out_all],
     'LR Rsquared':[rsquared_tot,rsquared,rsquared_all]},index=df_mean_CI.index)
 
@@ -404,7 +401,6 @@ data_MM_MRC1 = data_MM_MRC1.reset_index(drop=True)
 L2 = len(data_MM_MRC1)
 
 print('Number of measurements = {}'.format(sum(data_MM_MRC1['count'])))
-data_MM_MRC1.to_csv('data_MM_MRC1.csv')
 
 #%% Histogram of how many values are in each set
 l_2 = np.unique(data_MM_MRC1['count'],return_counts=True)
@@ -455,7 +451,7 @@ df_pairs_MRC1, L_pairs_MRC1 = randomvals_and_diff(data_MM_MRC1,ind_pkm,ind_EC)
 idx_std_res_MRC1,num_out_MRC1,rsquared_MRC1,linreg_MRC1,model_MRC1 = residuals(df_pairs_MRC1,False)
 
 # Get stats
-MUE_MRC1,MUE2_MRC1,MDUE_MRC1,MDUE2_MRC1,stdev_MRC1,R2p_MRC1,R2pmax_MRC1,Dstdev_MRC1,d_ks2_MRC1,p_ks2_MRC1 = measuresofquality(data_MM_pregroup,df_pairs_MRC1)
+MUE_MRC1,MDUE_MRC1,stdev_MRC1,R2p_MRC1,R2pmax_MRC1,Dstdev_MRC1 = measuresofquality(data_MM_pregroup,df_pairs_MRC1)
 
 # Get mean and confidence intervals
 mean_MRC1,lower_MRC1,upper_MRC1 = mean_confidence_interval(MUE_MRC1,stdev_MRC1,len(df_pairs_MRC1))
@@ -488,7 +484,7 @@ for i in range(len(bools)):
     df_allpairs_MRC1 = getallpairs(df_pairs_MRC1_2)
     
     # Get stats
-    MUE_MRC1_pub,MUE2_MRC1_pub,MDUE_MRC1_pub,MDUE2_MRC1_pub,stdev_MRC1_pub,R2p_MRC1_pub,R2pmax_MRC1_pub,Dstdev_MRC1_pub,d_ks2_MRC1_pub,p_ks2_MRC1_pub = measuresofquality(data_MM_pregroup,df_allpairs_MRC1)
+    MUE_MRC1_pub,MDUE_MRC1_pub,stdev_MRC1_pub,R2p_MRC1_pub,R2pmax_MRC1_pub,Dstdev_MRC1_pub = measuresofquality(data_MM_pregroup,df_allpairs_MRC1)
     
     # Calculate standardized residuals and find outliers
     idx_std_res_MRC1_pub,num_out_MRC1_pub,rsquared_MRC1_pub,linreg_MRC1_pub,model_MRC1_pub = residuals(df_allpairs_MRC1,False)
@@ -536,16 +532,14 @@ df_mean_CI_MRC1['Lower CI Ratio'] = lower_CI_r_MRC1
 df_mean_CI_MRC1['Upper CI Ratio'] = upper_CI_r_MRC1
 
 df_statistics_MRC1 = pd.DataFrame({'MUE': [MUE_tot,MUE_MRC1,MUE_MRC1_pub], 
-                              'MDUE': [MDUE_tot,MDUE_MRC1,MDUE_MRC1_pub],
-                              'R2 Pearson': [R2p_tot,R2p_MRC1,R2p_MRC1_pub],
-                              'R2 Pearson Max': [R2pmax_tot,R2pmax_MRC1,R2pmax_MRC1_pub],
-                              'Stdev': [stdev_tot,stdev_MRC1,stdev_MRC1_pub],
-                              'Dahlberg Stdev':[Dstdev_tot,Dstdev_MRC1,Dstdev_MRC1_pub],
-                              'KS test D-stat':[d_ks2_tot,d_ks2_MRC1,d_ks2_MRC1_pub],
-                              'D-critical stat':[p_ks2_tot,p_ks2_MRC1,p_ks2_MRC1_pub],
-                              'Num Outliers':[num_out_tot,num_out_MRC1,num_out_MRC1_pub],
-                              'LR Rsquared':[rsquared_tot,rsquared_MRC1,rsquared_MRC1_pub],
-                              'LR Slope':[slope_tot,slope_MRC1,slope_MRC1_pub]},index=df_mean_CI_MRC1.index)
+                    'MDUE': [MDUE_tot,MDUE_MRC1,MDUE_MRC1_pub],
+                    'R2 Pearson': [R2p_tot,R2p_MRC1,R2p_MRC1_pub],
+                    'R2 Pearson Max': [R2pmax_tot,R2pmax_MRC1,R2pmax_MRC1_pub],
+                    'Stdev': [stdev_tot,stdev_MRC1,stdev_MRC1_pub],
+                    'Dahlberg Stdev':[Dstdev_tot,Dstdev_MRC1,Dstdev_MRC1_pub],
+                    'Num Outliers':[num_out_tot,num_out_MRC1,num_out_MRC1_pub],
+                    'LR Rsquared':[rsquared_tot,rsquared_MRC1,rsquared_MRC1_pub],
+                    'LR Slope':[slope_tot,slope_MRC1,slope_MRC1_pub]},index=df_mean_CI_MRC1.index)
 
 # Creat list of the data being plotted
 df_pairs_MRC1['Diff Ratio'] = [10 ** num for num in abs(df_pairs_MRC1['Diff'])]

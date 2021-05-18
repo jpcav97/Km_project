@@ -383,6 +383,7 @@ def randomvals_and_diff(data,ind_pkm,ind_EC):
     km_list2 = [0]*L
     EC_list = [0]*L
 
+    ######## How to get every single possible pair###########
     # ind_count = data.columns.get_loc('count')
     # L2 = sum(data['count'])
     # km_list3 = [0]*L2
@@ -394,6 +395,7 @@ def randomvals_and_diff(data,ind_pkm,ind_EC):
     #         for k in range(j+1,x):
     #             km_list3.append(data.iloc[i,ind_pkm][j])
     #             km_list4.append(data.iloc[i,ind_pkm][k])
+    ##########################################################
     
     for i in range(L):
         temp = random.sample(data.iloc[i,ind_pkm],2)
