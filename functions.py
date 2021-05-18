@@ -364,17 +364,18 @@ def measuresofquality(data_MM_pregroup,data):
     # plt.plot(ecdf.x, ecdf.y)
     # plt.show()
     
-    sm.qqplot(data['Diff'], line ='45')
+    vals = st.shapiro(data['Diff'])
+    sm.qqplot(data['Diff'], line ='45',label='W-statistic = {}\np-value = {}'.format(round(vals.statistic,3), round(vals.pvalue,3)))
     plt.title('Q-Q Plot of Difference Between Pairs')
+    plt.legend()
     plt.show()
     
-    stats = st.shapiro(data['Diff'])
-    if stats.pvalue < 0.05:
-        print(f'\nSufficient data to say differences come from a normal distribution (Shapiro-Wilk statistic = {stats.statistic})')
+    if vals.pvalue < 0.05:
+        print(f'\nSufficient data to say differences come from a normal distribution (Shapiro-Wilk statistic = {vals.statistic})')
     else:
-        print(f'Differences between pairs do not come from a normal distribution (Shapiro-Wilk statistic = {stats.statistic})')
+        print(f'Differences between pairs do not come from a normal distribution (Shapiro-Wilk statistic = {vals.statistic})')
     
-    return MUE,MUE2,MDUE,MDUE2,stdev,R2p,R2pmax,Dstdev,d_ks,p_ks
+    return MUE,MDUE,stdev,R2p,R2pmax,Dstdev
 
 def randomvals_and_diff(data,ind_pkm,ind_EC):
     L = len(data)
@@ -412,6 +413,28 @@ def randomvals_and_diff(data,ind_pkm,ind_EC):
     df_pairs['Diff^2'] = [num ** 2 for num in df_pairs['Diff']]
     
     return df_pairs, L_pairs
+
+def get_pairs_tot(data_MM_pregroup):
+    ind_pkm = data_MM_pregroup.columns.get_loc('pKm')
+    Lpairs = int(len(data_MM_pregroup)/2)
+    km_list1 = [0]*Lpairs
+    km_list2 = [0]*Lpairs
+    
+    for i in range(Lpairs):
+        temp = random.sample(list(data_MM_pregroup.iloc[:,ind_pkm]),2)
+        km_list1[i] = temp[0]
+        km_list2[i] = temp[1]
+        
+    df_pairs_tot = pd.DataFrame({'value 1': km_list1, 'value 2': km_list2})
+    
+    # Create column for their difference
+    df_pairs_tot['Diff'] = 0
+    for i in range(Lpairs):
+        df_pairs_tot.iloc[i,-1] = df_pairs_tot.iloc[i,0] - df_pairs_tot.iloc[i,1]
+    
+    df_pairs_tot['Diff^2'] = [num ** 2 for num in df_pairs_tot['Diff']]
+
+    return df_pairs_tot, Lpairs
 
 def pairplot(data,plot_outliers,ind_outliers,rsquared,title,save,filename,linreg):
     plt.figure()

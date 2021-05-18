@@ -17,11 +17,10 @@ Created on Fri Oct  9 12:05:28 2020
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import random
 
 from functions import organize_index, mean_confidence_interval,sortbypubs, \
-    getallpairs, residuals, measuresofquality,randomvals_and_diff, pairplot, \
-        EnzymeClassAnalysis, findpubs, findfirstauthors, make_groups
+    getallpairs, residuals, measuresofquality,randomvals_and_diff, get_pairs_tot, \
+        pairplot, EnzymeClassAnalysis, findpubs, findfirstauthors, make_groups
         
 import matplotlib.ticker as mticker
 class MathTextSciFormatter(mticker.Formatter):
@@ -60,25 +59,7 @@ for i in range(len(data_MM_pregroup)):
 
 #%%# Plotting pairs of Measured Values
 #### Control graph ####
-ind_pkm = data_MM_pregroup.columns.get_loc('pKm')
-Lpairs = int(len(data_MM_pregroup)/2)
-km_list1 = [0]*Lpairs
-km_list2 = [0]*Lpairs
-
-for i in range(Lpairs):
-    temp = random.sample(list(data_MM_pregroup.iloc[:,ind_pkm]),2)
-    km_list1[i] = temp[0]
-    km_list2[i] = temp[1]
-    
-df_pairs_tot = pd.DataFrame({'value 1': km_list1, 'value 2': km_list2})
-
-# Create column for their difference
-df_pairs_tot['Diff'] = 0
-for i in range(Lpairs):
-    df_pairs_tot.iloc[i,-1] = df_pairs_tot.iloc[i,0] - df_pairs_tot.iloc[i,1]
-
-df_pairs_tot['Diff^2'] = [num ** 2 for num in df_pairs_tot['Diff']]
-
+df_pairs_tot,Lpairs = get_pairs_tot(data_MM_pregroup)
 # Calculate standardized residuals and find outliers
 idx_std_res_tot,num_out_tot,rsquared_tot,linreg_tot,model_tot = residuals(df_pairs_tot,True)
 
@@ -124,6 +105,7 @@ L2 = len(data_MM)
 
 # Number of measurements after removing negative measurements
 print('Number of groups = {}, Number of measurements = {}'.format(len(data_MM),sum(data_MM['count'])))
+data_MM.to_csv('data_MM.csv')
 
 #%%# Get pairs regardless of number of publications ####
 ind_pkm = data_MM.columns.get_loc('Km')
@@ -422,6 +404,7 @@ data_MM_MRC1 = data_MM_MRC1.reset_index(drop=True)
 L2 = len(data_MM_MRC1)
 
 print('Number of measurements = {}'.format(sum(data_MM_MRC1['count'])))
+data_MM_MRC1.to_csv('data_MM_MRC1.csv')
 
 #%% Histogram of how many values are in each set
 l_2 = np.unique(data_MM_MRC1['count'],return_counts=True)
@@ -612,9 +595,3 @@ print('Total number of entries of all sets in type 1 and type 2 MRC, respectivel
 multpairs = False
 isgrouped = True # For data not grouped by MRC's yet (only for data_MM_pregroup)
 df_EC_analysis, unique_EC_tot = EnzymeClassAnalysis(data_MM_pregroup,multpairs,isgrouped)
-
-#%% Save final versions of pair dataframes
-df_pairs.to_csv('df_pairs.csv')
-df_pairs_tot.to_csv('df_pairs_tot.csv')
-df_statistics_MRC1.to_csv('Stats_MRC1.csv')
-
