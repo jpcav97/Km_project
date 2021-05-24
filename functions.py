@@ -311,16 +311,16 @@ def measuresofquality(data_MM_pregroup,data):
     # Mean unsigned error
     L = len(data)
     MUE = (1/math.sqrt(2))*(sum(abs(data['Diff']))/len(data))
-    MUE2 = round(pow(10,MUE),2)
-    print("\n The Mean Unsigned Error is {} in pKm units (a factor of {} in Km)".format(round(MUE,3),MUE2))
+    # MUE2 = round(pow(10,MUE),2)
+    # print("\n The Mean Unsigned Error is {} in pKm units (a factor of {} in Km)".format(round(MUE,3),MUE2))
     
     # Median unsigned error
     MDUE = (1/(math.sqrt(2)))* stats.median(abs(data['Diff']))
-    MDUE2 = round(pow(10,MDUE),2)
-    print("\n The Median Unsigned Error is {} in pKm units (a factor of {})".format(round(MDUE,3),MDUE2))
+    # MDUE2 = round(pow(10,MDUE),2)
+    # print("\n The Median Unsigned Error is {} in pKm units (a factor of {})".format(round(MDUE,3),MDUE2))
     
     stdev = math.sqrt((1/(2*(L-1)))*sum(data['Diff^2']))
-    print("\n The Standard Deviation is {} in pKm units".format(round(stdev,3)))
+    # print("\n The Standard Deviation is {} in pKm units".format(round(stdev,3)))
     
     mean1 = stats.mean(data['value 1'])
     mean2 = stats.mean(data['value 2'])
@@ -331,24 +331,24 @@ def measuresofquality(data_MM_pregroup,data):
     
     R2p = abs(sum(data['val1-mean1'] * data['val2-mean2'])\
         /(math.sqrt(sum(data['(val1-mean1)^2']))*math.sqrt(sum(data['(val2-mean2)^2']))))
-    print("\n The R^2 Pearson Number is ", round(R2p,3))
+    # print("\n The R^2 Pearson Number is ", round(R2p,3))
     
     stdevtot = np.std(data_MM_pregroup['pKm'])
     R2pmax = 1 - (stdev/stdevtot)**2
-    print("\n The Max R^2 Pearson Number is ", round(R2pmax,3))
+    # print("\n The Max R^2 Pearson Number is ", round(R2pmax,3))
     
     Dstdev = math.sqrt(sum(data['Diff^2'])/(2*len(data)))
-    print('\n The Dahlberg Standard Deviation is {}'.format(round(Dstdev,3)))
+    # print('\n The Dahlberg Standard Deviation is {}'.format(round(Dstdev,3)))
     
     d_ks,p_ks = st.ks_2samp(data['value 1'], data['value 2'])
-    print('\n 2 Sample KS test D statistic = {}'.format(round((d_ks),2)))
-    print('\n 2 Sample D-critical statistic = {}'.format(round((p_ks),2)))
+    # print('\n 2 Sample KS test D statistic = {}'.format(round((d_ks),2)))
+    # print('\n 2 Sample D-critical statistic = {}'.format(round((p_ks),2)))
     
-    Dcrit_2samp = 1.36*math.sqrt(2/L)
-    if d_ks < Dcrit_2samp:
-        print('\n Value to Value pairs come from a normal distribution')
-    else:
-        print('Value to Value pairs do not come from a normal distribution')
+    # Dcrit_2samp = 1.36*math.sqrt(2/L)
+    # if d_ks < Dcrit_2samp:
+    #     print('\n Value to Value pairs come from a normal distribution')
+    # else:
+    #     print('Value to Value pairs do not come from a normal distribution')
     
     # DIFFERENCE BETWEEN PAIRS
     u = np.unique(data['Diff'])
@@ -365,15 +365,15 @@ def measuresofquality(data_MM_pregroup,data):
     # plt.show()
     
     vals = st.shapiro(data['Diff'])
-    sm.qqplot(data['Diff'], line ='45',label='W-statistic = {}\np-value = {}'.format(round(vals.statistic,3), round(vals.pvalue,3)))
+    sm.qqplot(data['Diff'], line ='45',label='W-statistic = {}\np-value = {:e}'.format(round(vals.statistic,3), vals.pvalue))
     plt.title('Q-Q Plot of Difference Between Pairs')
     plt.legend()
     plt.show()
     
-    if vals.pvalue < 0.05:
-        print(f'\nSufficient data to say differences come from a normal distribution (Shapiro-Wilk statistic = {vals.statistic})')
-    else:
-        print(f'Differences between pairs do not come from a normal distribution (Shapiro-Wilk statistic = {vals.statistic})')
+    # if vals.pvalue < 0.05:
+    #     print(f'\nSufficient data to say differences come from a normal distribution (Shapiro-Wilk statistic = {vals.statistic})')
+    # else:
+    #     print(f'Differences between pairs do not come from a normal distribution (Shapiro-Wilk statistic = {vals.statistic})')
     
     return MUE,MDUE,stdev,R2p,R2pmax,Dstdev
 
@@ -395,8 +395,7 @@ def randomvals_and_diff(data,ind_pkm,ind_EC):
     #         for k in range(j+1,x):
     #             km_list3.append(data.iloc[i,ind_pkm][j])
     #             km_list4.append(data.iloc[i,ind_pkm][k])
-    ##########################################################
-    
+    ##########################################################        
     for i in range(L):
         temp = random.sample(data.iloc[i,ind_pkm],2)
         km_list1[i] = temp[0]
