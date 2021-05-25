@@ -63,7 +63,7 @@ ind_EC = data_MM.columns.get_loc('ec_number')
 ind_pkm_MRC1 = data_MM_MRC1.columns.get_loc('Km')
 ind_EC_MRC1 = data_MM_MRC1.columns.get_loc('ec_number')
 
-s_log_scale = [1, 30, 60, 100, 300, 600, 1000]
+s_log_scale = [1, 3, 6, 10, 30, 60, 100, 300, 600, 1000]
 columns = ['MUE','MUE std','MDUE','MDUE std','Stdev','Stdev std','R2 Pearson',\
            'R2 Pearson std','R2 Pearson Max','R2 Pearson Max std','Lower',\
                'Lower std','Upper','Upper std']
@@ -73,39 +73,40 @@ loop_data_MRC2 = pd.DataFrame(index=s_log_scale,columns=columns)
 half_loop_data_MRC1 = pd.DataFrame(index=s_log_scale,columns=columns)
 half_loop_data_MRC2 = pd.DataFrame(index=s_log_scale,columns=columns)
 
-for i in range(len(s_log_scale)):
+
+for j in range(2):
+    
+    k = 0
 
     df_pairs_tot,L_pairs_tot = get_pairs_tot(data_MM_pregroup)
     df_pairs,L_pairs = randomvals_and_diff(data_MM,ind_pkm,ind_EC)
     df_pairs_MRC1,L_pairs_MRC1 = randomvals_and_diff(data_MM_MRC1,ind_pkm_MRC1,ind_EC_MRC1)
     
-    for j in range(2):
-        if j == 1:
-            pairs_index_tot = list(df_pairs_tot.index)
-            pairs_index = list(df_pairs.index)
-            pairs_index_MRC1 = list(df_pairs_MRC1.index)
-            
-            rand_tot = random.sample(pairs_index_tot,round(L_pairs_tot/2))
-            rand = random.sample(pairs_index,round(L_pairs/2))
-            rand_MRC1 = random.sample(pairs_index_MRC1,round(L_pairs_MRC1/2))
-   
-            df_pairs_tot = df_pairs_tot.iloc[rand_tot]
-            df_pairs = df_pairs.iloc[rand]
-            df_pairs_MRC1 = df_pairs_MRC1.iloc[rand_MRC1]
-            
-            
-        MUE_tot_evol,MDUE_tot_evol,stdev_tot_evol,R2p_tot_evol,R2pmax_tot_evol,Dstdev_tot_evol = \
-            measuresofquality(data_MM_pregroup,df_pairs_tot)
-        MUE_evol,MDUE_evol,stdev_evol,R2p_evol,R2pmax_evol,Dstdev_evol = \
-            measuresofquality(data_MM_pregroup,df_pairs)
-        MUE_MRC1_evol,MDUE_MRC1_evol,stdev_MRC1_evol,R2p_MRC1_evol,R2pmax_MRC1_evol,Dstdev_MRC1_evol = \
-            measuresofquality(data_MM_pregroup,df_pairs_MRC1)
+    if j == 1:
+        pairs_index_tot = list(df_pairs_tot.index)
+        pairs_index = list(df_pairs.index)
+        pairs_index_MRC1 = list(df_pairs_MRC1.index)
         
-        mean_tot_evol,lower_tot_evol,upper_tot_evol = mean_confidence_interval(MUE_tot_evol,stdev_tot_evol,len(df_pairs_tot))
-        mean_evol,lower_evol,upper_evol = mean_confidence_interval(MUE_evol,stdev_evol,len(df_pairs))
-        mean_MRC1_evol,lower_MRC1_evol,upper_MRC1_evol = mean_confidence_interval(MUE_MRC1_evol,stdev_MRC1_evol,len(df_pairs_MRC1))
+        rand_tot = random.sample(pairs_index_tot,round(L_pairs_tot/2))
+        rand = random.sample(pairs_index,round(L_pairs/2))
+        rand_MRC1 = random.sample(pairs_index_MRC1,round(L_pairs_MRC1/2))
+   
+        df_pairs_tot = df_pairs_tot.iloc[rand_tot]
+        df_pairs = df_pairs.iloc[rand]
+        df_pairs_MRC1 = df_pairs_MRC1.iloc[rand_MRC1]
+        
+    MUE_tot_evol,MDUE_tot_evol,stdev_tot_evol,R2p_tot_evol,R2pmax_tot_evol,Dstdev_tot_evol = \
+        measuresofquality(data_MM_pregroup,df_pairs_tot)
+    MUE_evol,MDUE_evol,stdev_evol,R2p_evol,R2pmax_evol,Dstdev_evol = \
+        measuresofquality(data_MM_pregroup,df_pairs)
+    MUE_MRC1_evol,MDUE_MRC1_evol,stdev_MRC1_evol,R2p_MRC1_evol,R2pmax_MRC1_evol,Dstdev_MRC1_evol = \
+        measuresofquality(data_MM_pregroup,df_pairs_MRC1)
     
-        k = 0
+    mean_tot_evol,lower_tot_evol,upper_tot_evol = mean_confidence_interval(MUE_tot_evol,stdev_tot_evol,len(df_pairs_tot))
+    mean_evol,lower_evol,upper_evol = mean_confidence_interval(MUE_evol,stdev_evol,len(df_pairs))
+    mean_MRC1_evol,lower_MRC1_evol,upper_MRC1_evol = mean_confidence_interval(MUE_MRC1_evol,stdev_MRC1_evol,len(df_pairs_MRC1))
+
+    for i in  range(len(s_log_scale)):
         Max = s_log_scale[i]
         while k < Max:
             
@@ -153,92 +154,95 @@ for i in range(len(s_log_scale)):
             R2pmax_evol = np.vstack((R2pmax_evol,R2pmax))
             R2pmax_MRC1_evol = np.vstack((R2pmax_MRC1_evol,R2pmax_MRC1))
             
-            """ Averages """
-            # MUE_tot_ave = MUE_tot_evol.mean(0)
-            MUE_ave = np.mean(MUE_evol)
-            MUE_MRC1_ave = np.mean(MUE_MRC1_evol)
-            
-            # MDUE_tot_ave = MDUE_tot_evol.mean(0)
-            MDUE_ave = np.mean(MDUE_evol)
-            MDUE_MRC1_ave = np.mean(MDUE_MRC1_evol)
-            
-            # stdev_tot_ave = stdev_tot_evol.mean(0)
-            stdev_ave = np.mean(stdev_evol)
-            stdev_MRC1_ave = np.mean(stdev_MRC1_evol)
-            
-            # lower_tot_ave = lower_tot_evol.mean(0)
-            lower_ave = np.mean(lower_evol)
-            lower_MRC1_ave = np.mean(lower_MRC1_evol)
-            
-            # upper_tot_ave = upper_tot_evol.mean(0)
-            upper_ave = np.mean(upper_evol)
-            upper_MRC1_ave = np.mean(upper_MRC1_evol)
-            
-            # R2p_tot_ave = R2p_tot_evol.mean(0)
-            R2p_ave = np.mean(R2p_evol)
-            R2p_MRC1_ave = np.mean(R2p_MRC1_evol)
-            
-            # R2pmax_tot_ave = R2pmax_tot_evol.mean(0)
-            R2pmax_ave = np.mean(R2pmax_evol)
-            R2pmax_MRC1_ave = np.mean(R2pmax_MRC1_evol)
-            
-            """ Standard Deviations """
-            # MUE_tot_dev = MUE_tot_evol.std(0)
-            MUE_dev = np.std(MUE_evol)
-            MUE_MRC1_dev = np.std(MUE_MRC1_evol)
-            
-            # MDUE_tot_dev = MDUE_tot_evol.std(0)
-            MDUE_dev = np.std(MDUE_evol)
-            MDUE_MRC1_dev = np.std(MDUE_MRC1_evol)
-            
-            # stdev_tot_dev = stdev_tot_evol.std(0)
-            stdev_dev = np.std(stdev_evol)
-            stdev_MRC1_dev = np.std(stdev_MRC1_evol)
-            
-            # lower_tot_dev = lower_tot_evol.std(0)
-            lower_dev = np.std(lower_evol)
-            lower_MRC1_dev = np.std(lower_MRC1_evol)
-            
-            # upper_tot_dev = upper_tot_evol.std(0)
-            upper_dev = np.std(upper_evol)
-            upper_MRC1_dev = np.std(upper_MRC1_evol)
-            
-            # R2p_tot_dev = R2p_tot_evol.std(0)
-            R2p_dev = np.std(R2p_evol)
-            R2p_MRC1_dev = np.std(R2p_MRC1_evol)
-            
-            # R2pmax_tot_dev = R2pmax_tot_evol.std(0)
-            R2pmax_dev = np.std(R2pmax_evol)
-            R2pmax_MRC1_dev = np.std(R2pmax_MRC1_evol)
-            
             k = k + 1
+            print('{} Loop'.format(k))
+        
+        """ Averages """
+        # MUE_tot_ave = MUE_tot_evol.mean(0)
+        MUE_ave = np.mean(MUE_evol)
+        MUE_MRC1_ave = np.mean(MUE_MRC1_evol)
+        
+        # MDUE_tot_ave = MDUE_tot_evol.mean(0)
+        MDUE_ave = np.mean(MDUE_evol)
+        MDUE_MRC1_ave = np.mean(MDUE_MRC1_evol)
+        
+        # stdev_tot_ave = stdev_tot_evol.mean(0)
+        stdev_ave = np.mean(stdev_evol)
+        stdev_MRC1_ave = np.mean(stdev_MRC1_evol)
+        
+        # lower_tot_ave = lower_tot_evol.mean(0)
+        lower_ave = np.mean(lower_evol)
+        lower_MRC1_ave = np.mean(lower_MRC1_evol)
+        
+        # upper_tot_ave = upper_tot_evol.mean(0)
+        upper_ave = np.mean(upper_evol)
+        upper_MRC1_ave = np.mean(upper_MRC1_evol)
+        
+        # R2p_tot_ave = R2p_tot_evol.mean(0)
+        R2p_ave = np.mean(R2p_evol)
+        R2p_MRC1_ave = np.mean(R2p_MRC1_evol)
+        
+        # R2pmax_tot_ave = R2pmax_tot_evol.mean(0)
+        R2pmax_ave = np.mean(R2pmax_evol)
+        R2pmax_MRC1_ave = np.mean(R2pmax_MRC1_evol)
+        
+        """ Standard Deviations """
+        # MUE_tot_dev = MUE_tot_evol.std(0)
+        MUE_dev = np.std(MUE_evol)
+        MUE_MRC1_dev = np.std(MUE_MRC1_evol)
+        
+        # MDUE_tot_dev = MDUE_tot_evol.std(0)
+        MDUE_dev = np.std(MDUE_evol)
+        MDUE_MRC1_dev = np.std(MDUE_MRC1_evol)
+        
+        # stdev_tot_dev = stdev_tot_evol.std(0)
+        stdev_dev = np.std(stdev_evol)
+        stdev_MRC1_dev = np.std(stdev_MRC1_evol)
+        
+        # lower_tot_dev = lower_tot_evol.std(0)
+        lower_dev = np.std(lower_evol)
+        lower_MRC1_dev = np.std(lower_MRC1_evol)
+        
+        # upper_tot_dev = upper_tot_evol.std(0)
+        upper_dev = np.std(upper_evol)
+        upper_MRC1_dev = np.std(upper_MRC1_evol)
+        
+        # R2p_tot_dev = R2p_tot_evol.std(0)
+        R2p_dev = np.std(R2p_evol)
+        R2p_MRC1_dev = np.std(R2p_MRC1_evol)
+        
+        # R2pmax_tot_dev = R2pmax_tot_evol.std(0)
+        R2pmax_dev = np.std(R2pmax_evol)
+        R2pmax_MRC1_dev = np.std(R2pmax_MRC1_evol)
+        
+        
+        # Save looping data
+        MRC2 = [MUE_ave,MUE_dev,MDUE_ave,MDUE_dev,stdev_ave,stdev_dev,R2p_ave,R2p_dev,\
+                R2pmax_ave,R2pmax_dev,lower_ave,lower_dev,upper_ave,upper_dev]
+        
+        MRC1 = [MUE_MRC1_ave,MUE_MRC1_dev,MDUE_MRC1_ave,MDUE_MRC1_dev,stdev_MRC1_ave,\
+                stdev_MRC1_dev,R2p_MRC1_ave,R2p_MRC1_dev,R2pmax_MRC1_ave,\
+                R2pmax_MRC1_dev,lower_MRC1_ave,lower_MRC1_dev,\
+                upper_MRC1_ave,upper_MRC1_dev]
+                
+        for l in range(len(MRC1)):
+            if j == 0:
+                loop_data_MRC1.iloc[i,l] = MRC1[l]
+                loop_data_MRC2.iloc[i,l] = MRC2[l]
+            if j == 1:
+                half_loop_data_MRC1.iloc[i,l] = MRC1[l]
+                half_loop_data_MRC2.iloc[i,l] = MRC2[l]
             
-            # Save looping data
-            MRC1 = [MUE_dev,MDUE_ave,MDUE_dev,stdev_ave,stdev_dev,R2p_ave,R2p_dev,\
-                    R2pmax_ave,R2pmax_dev,lower_ave,lower_dev,upper_ave,upper_dev]
-            
-            MRC2 = [MUE_MRC1_dev,MDUE_MRC1_ave,MDUE_MRC1_dev,stdev_MRC1_ave,\
-                    stdev_MRC1_dev,R2p_MRC1_ave,R2p_MRC1_dev,R2pmax_MRC1_ave,\
-                    R2pmax_MRC1_dev,lower_MRC1_ave,lower_MRC1_dev,\
-                    upper_MRC1_ave,upper_MRC1_dev]
-                    
-            for l in range(len(MRC1)):
-                if j == 0:
-                    loop_data_MRC1.iloc[i,l] = MRC1[l]
-                    loop_data_MRC2.iloc[i,l] = MRC2[l]
-                if j == 1:
-                    half_loop_data_MRC1.iloc[i,l] = MRC1[l]
-                    half_loop_data_MRC2.iloc[i,l] = MRC2[l]
-
-    if i > 0:
-        ind_MUE_std = loop_data_MRC2.columns.get_loc('MUE std')
-        MUE_dev_compare = float(loop_data_MRC2.iloc[1,ind_MUE_std])
-        if MUE_dev <= MUE_dev_compare/2.718:
-            magic_number = i
-            print("Number of runs to reduce STD by 1/2.718 is {}".format(s_log_scale[i]))
-            
-        print('Done with looping {} times'.format(i))
-    else:
-        print('Done with looping 1 time')
+        # Compare deviation of current Mean unsigned error to the MUE STD taken after 3 loops
+        if i > 0:
+            ind_MUE_std = loop_data_MRC2.columns.get_loc('MUE std')
+            MUE_dev_compare = float(loop_data_MRC2.iloc[1,ind_MUE_std])
+            if MUE_dev <= MUE_dev_compare/2.718:
+                magic_number = i
+                print("Number of runs to reduce STD by 1/2.718 is {}".format(s_log_scale[i]))
+                
+            print('Done with looping {} times'.format(s_log_scale[i]))
+        else:
+            print('Done with looping 1 time')
     
     
