@@ -9,6 +9,7 @@ Created on Sun May 16 14:58:13 2021
 
 import numpy as np
 import pandas as pd
+import matplotlib
 import matplotlib.pyplot as plt
 import math
 import statistics as stats
@@ -19,6 +20,7 @@ from sklearn.linear_model import LinearRegression
 from difflib import SequenceMatcher as sq
 import random
 
+matplotlib.use('Agg')
 
 def organize_index(data):
     uq_counts_1= np.unique(data['count'])
