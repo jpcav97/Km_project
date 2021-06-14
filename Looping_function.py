@@ -299,9 +299,9 @@ for j in range(1,2):
             print('Done with looping 1 time')
 
 # loop_data_MRC1.to_csv('figures/loop_data_MRC1.csv')
-# loop_data_MRC2.to_csv('figures/loop_data_MRC1_auth.csv')
+# loop_data_MRC2.to_csv('figures/loop_data_MRC2.csv')
 # loop_data_tot.to_csv('figures/loop_data_tot.csv')
 
 half_loop_data_MRC1.to_csv('figures/half_loop_data_MRC1.csv')
-half_loop_data_MRC2.to_csv('figures/half_loop_data_MRC1_auth.csv')
+half_loop_data_MRC2.to_csv('figures/half_loop_data_MRC2.csv')
 half_loop_data_tot.to_csv('figures/half_loop_data_tot.csv')
