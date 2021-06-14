@@ -1,7 +1,4 @@
-# The following document describes the data and scripts in their order 
-# of command as used to analyze the entries provided by the SABIO-RK
-# database. They will be explained in order and should be excecuted 
-# in the same way.
+# The following document describes the data and scripts in their order of command as used to analyze the entries provided by the SABIO-RK database. They will be explained in order and should be excecuted in the same way.
 
 km_data_corrected.txt
    - This is the corrected version of the original dataset provided 
